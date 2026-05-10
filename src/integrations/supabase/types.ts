@@ -200,31 +200,7 @@ export type Database = {
         }
         Relationships: []
       }
-      pixel_art_cache: {
-        Row: {
-          created_at: string
-          encounter_name: string
-          image_url: string
-          phase: number
-          storage_path: string | null
-        }
-        Insert: {
-          created_at?: string
-          encounter_name: string
-          image_url: string
-          phase: number
-          storage_path?: string | null
-        }
-        Update: {
-          created_at?: string
-          encounter_name?: string
-          image_url?: string
-          phase?: number
-          storage_path?: string | null
-        }
-        Relationships: []
-      }
-      profiles: {
+profiles: {
         Row: {
           character_snapshot: Json | null
           company_name: string

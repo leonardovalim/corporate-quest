@@ -2,6 +2,3 @@ project_id = "your-project-id"
 
 [functions.process-email-queue]
 verify_jwt = true
-
-[functions.generate-pixel-art]
-verify_jwt = true
