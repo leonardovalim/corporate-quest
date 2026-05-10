@@ -12,16 +12,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
-const ADMIN_SESSION_KEY = 'admin_session';
-const ADMIN_PASSWORD_KEY = 'admin_password';
+const ADMIN_TOKEN_KEY = 'admin_token';
 const ADMIN_USERNAME = 'admin';
 
 function isLoggedIn() {
-  return sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true';
+  return !!sessionStorage.getItem(ADMIN_TOKEN_KEY);
 }
 
-function getStoredPassword(): string {
-  return sessionStorage.getItem(ADMIN_PASSWORD_KEY) ?? '';
+function getStoredToken(): string {
+  return sessionStorage.getItem(ADMIN_TOKEN_KEY) ?? '';
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -48,13 +47,12 @@ function AdminLogin({ onLogin }: { onLogin: () => void }) {
       setError('Credenciais inválidas');
       return;
     }
-    const { data, error: rpcErr } = await supabase.rpc('verify_admin_password', { p_password: password });
-    if (rpcErr || data !== true) {
+    const { data: token, error: rpcErr } = await supabase.rpc('create_admin_session', { p_password: password });
+    if (rpcErr || !token) {
       setError('Credenciais inválidas');
       return;
     }
-    sessionStorage.setItem(ADMIN_SESSION_KEY, 'true');
-    sessionStorage.setItem(ADMIN_PASSWORD_KEY, password);
+    sessionStorage.setItem(ADMIN_TOKEN_KEY, token);
     onLogin();
   };
 
@@ -107,7 +105,7 @@ function AIConfigTab() {
     setSaving(true);
     setStatusMsg(null);
     const { error } = await supabase.rpc('update_admin_ai_config', {
-      p_password: getStoredPassword(),
+      p_token: getStoredToken(),
       p_config: config as any,
     });
     setSaving(false);
@@ -122,7 +120,7 @@ function AIConfigTab() {
     setSaving(true);
     setStatusMsg(null);
     const { error } = await supabase.rpc('update_admin_ai_config', {
-      p_password: getStoredPassword(),
+      p_token: getStoredToken(),
       p_config: {},
     });
     setSaving(false);
@@ -265,7 +263,7 @@ function UsersTab() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase.rpc('get_all_profiles_for_admin', { p_password: getStoredPassword() })
+    supabase.rpc('get_all_profiles_for_admin', { p_token: getStoredToken() })
       .then(({ data, error: err }) => {
         if (err) { setError(err.message); }
         else { setUsers((data ?? []) as UserRow[]); }
@@ -404,7 +402,7 @@ function LogsTab() {
     setLoading(true);
     setError(null);
     const { data, error: err } = await supabase.rpc('get_game_logs_for_admin', {
-      p_password: getStoredPassword(),
+      p_token: getStoredToken(),
       p_limit: 200,
       p_event: filter === 'all' ? null : filter,
     });
@@ -682,8 +680,7 @@ export default function AdminPage() {
   const [loggedIn, setLoggedIn] = useState(isLoggedIn);
 
   const handleLogout = () => {
-    sessionStorage.removeItem(ADMIN_SESSION_KEY);
-    sessionStorage.removeItem(ADMIN_PASSWORD_KEY);
+    sessionStorage.removeItem(ADMIN_TOKEN_KEY);
     setLoggedIn(false);
   };
 

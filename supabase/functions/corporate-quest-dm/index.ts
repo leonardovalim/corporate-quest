@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -35,6 +36,18 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+
+  // Reject unauthenticated (anon) requests to prevent API credit abuse
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader) return jsonError("Unauthorized", 401);
+
+  const supabase = createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+    { global: { headers: { Authorization: authHeader } } }
+  );
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return jsonError("Unauthorized", 401);
 
   try {
     const body = await req.json().catch(() => null);
