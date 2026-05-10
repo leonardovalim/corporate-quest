@@ -1,0 +1,353 @@
+# data/bonuses.yaml
+# Corporate Quest — Political Capital Bonus Definitions
+# Source of truth for all bonus data. Mirrored as TypeScript in src/game/politicalCapital.ts
+
+bonuses:
+
+  # ── Tier 1 (Custo 1) ─────────────────────────────────────────────────────────
+
+  - id: "COFFEE_BOOST"
+    name: "Coffee Boost"
+    cost: 1
+    tier: 1
+    type: "passive"
+    effect: "+2 Energy máxima nesta sessão (12 total)"
+    tendencies: ["ethical", "neutral", "unethical"]
+    flavor: "Café premium. Vale cada centavo."
+
+  - id: "EARLY_BIRD"
+    name: "Early Bird"
+    cost: 1
+    tier: 1
+    type: "passive"
+    effect: "+1 no primeiro roll da sessão"
+    tendencies: ["ethical", "neutral", "unethical"]
+    flavor: "Você chegou antes de todo mundo."
+
+  - id: "SMALL_TALK_PREP"
+    name: "Small Talk Prep"
+    cost: 1
+    tier: 1
+    type: "active"
+    uses: 1
+    effect: "Sabe 1 interesse pessoal de um NPC (pergunta ao DM)"
+    tendencies: ["ethical", "neutral"]
+    flavor: "Você stalkeou o LinkedIn dele."
+
+  # ── Tier 2 (Custo 2) ─────────────────────────────────────────────────────────
+
+  - id: "MINOR_EDGE"
+    name: "Minor Edge"
+    cost: 2
+    tier: 2
+    type: "passive"
+    effect: "+1 em todos os rolls da sessão"
+    tendencies: ["ethical", "neutral", "unethical"]
+    excludes: ["MAJOR_EDGE"]
+    flavor: "Você está num bom dia."
+
+  - id: "MEETING_NOTES"
+    name: "Meeting Notes"
+    cost: 2
+    tier: 2
+    type: "active"
+    uses: 2
+    effect: "Vê a DC antes de escolher sua abordagem"
+    tendencies: ["ethical", "neutral"]
+    flavor: "Você leu a pauta. Sabe o que esperar."
+
+  - id: "SECOND_WIND"
+    name: "Second Wind"
+    cost: 2
+    tier: 2
+    type: "active"
+    uses: 1
+    effect: "Recupera 3 Energy imediatamente (ação livre)"
+    tendencies: ["ethical", "neutral", "unethical"]
+    flavor: "Respira fundo. Foco. Vamos."
+
+  - id: "RUMOR_MILL"
+    name: "Rumor Mill"
+    cost: 2
+    tier: 2
+    type: "active"
+    uses: 1
+    effect: "Sabe a disposition inicial de todos NPCs na cena"
+    tendencies: ["neutral", "unethical"]
+    flavor: "O pessoal do café te contou quem tá de mal humor."
+
+  - id: "COFFEE_CHAT_INTEL"
+    name: "Coffee Chat Intel"
+    cost: 2
+    tier: 2
+    type: "active"
+    uses: 1
+    effect: "Sabe qual NPC tem mais influência na decisão da cena"
+    tendencies: ["ethical", "neutral", "unethical"]
+    flavor: "O pessoal do café sempre sabe quem manda de verdade."
+
+  # ── Tier 3 (Custo 3) ─────────────────────────────────────────────────────────
+
+  - id: "PREPARED_ARGUMENT"
+    name: "Prepared Argument"
+    cost: 3
+    tier: 3
+    type: "active"
+    uses: 1
+    effect: "+4 em um único roll (declarar ANTES de rolar)"
+    tendencies: ["ethical", "neutral"]
+    rules:
+      - "Declara ANTES de rolar"
+    flavor: "Você ensaiou isso no espelho. Três vezes."
+
+  - id: "SECOND_CHANCE"
+    name: "Second Chance"
+    cost: 3
+    tier: 3
+    type: "active"
+    uses: 1
+    effect: "Reroll 1 dado, fica com o MELHOR resultado"
+    tendencies: ["neutral", "unethical"]
+    rules:
+      - "Declara DEPOIS de ver o resultado"
+      - "Fica com o melhor dos dois"
+    flavor: '"Deixa eu reformular isso..."'
+
+  - id: "NETWORK_PING"
+    name: "Network Ping"
+    cost: 3
+    tier: 3
+    type: "active"
+    uses: 1
+    effect: "1 NPC neutro/hostil começa com +2 disposition"
+    tendencies: ["ethical", "neutral"]
+    rules:
+      - "Escolhe o NPC no momento do encontro"
+      - "Não funciona em NPCs já aliados"
+    flavor: "Vocês têm um amigo em comum. Ele falou bem de você."
+
+  - id: "SAFETY_NET"
+    name: "Safety Net"
+    cost: 3
+    tier: 3
+    type: "active"
+    uses: 1
+    effect: "Nat 1 (falha crítica) vira falha normal"
+    tendencies: ["neutral", "unethical"]
+    rules:
+      - "Ativa automaticamente no primeiro nat 1"
+      - "Falha ainda acontece, mas sem consequência extra"
+    flavor: "Seu colega cobre sua gafe sem perceber."
+
+  - id: "DELEGATE_TASK"
+    name: "Delegate Task"
+    cost: 3
+    tier: 3
+    type: "active"
+    uses: 1
+    effect: "Passa 1 check pra um NPC aliado fazer por você"
+    tendencies: ["ethical", "neutral"]
+    rules:
+      - "NPC precisa estar presente e aliado"
+      - "NPC usa os stats dele (pode ser melhor ou pior)"
+      - "Sucesso/falha afeta reputação do NPC, não sua"
+    flavor: '"Fulano, você é melhor nisso que eu. Pode apresentar?"'
+
+  - id: "PAPER_TRAIL"
+    name: "Paper Trail"
+    cost: 3
+    tier: 3
+    type: "active"
+    uses: 1
+    effect: "+3 em 1 check de TEC ou AWA (com evidência)"
+    tendencies: ["ethical", "neutral"]
+    rules:
+      - "Só funciona para checks de TEC ou AWA"
+      - "Declara antes de rolar"
+    flavor: '"Tenho os dados aqui. Olha o gráfico."'
+
+  # ── Tier 4 (Custo 4) ─────────────────────────────────────────────────────────
+
+  - id: "MAJOR_EDGE"
+    name: "Major Edge"
+    cost: 4
+    tier: 4
+    type: "passive"
+    effect: "+2 em todos os rolls da sessão"
+    tendencies: ["ethical", "neutral"]
+    excludes: ["MINOR_EDGE"]
+    rules:
+      - "Não stacka com MINOR_EDGE (substitui)"
+    flavor: "Você está no auge. Tudo flui."
+
+  - id: "CLUTCH_MOMENT"
+    name: "Clutch Moment"
+    cost: 4
+    tier: 4
+    type: "active"
+    uses: 1
+    effect: "Transforma 1 falha em sucesso (se errou por ≤3)"
+    tendencies: ["ethical", "neutral"]
+    rules:
+      - "Só funciona se roll ficou 1-3 abaixo da DC"
+      - "Declara DEPOIS de ver resultado"
+      - "Roll 12 vs DC 15? Funciona. Roll 10 vs DC 15? Não funciona."
+    flavor: "Aquele momento de clareza quando tudo importa."
+
+  - id: "INSURANCE_POLICY"
+    name: "Insurance Policy"
+    cost: 4
+    tier: 4
+    type: "active"
+    uses: 1
+    effect: "Ignora 1 falha completamente (Energy devolvida)"
+    tendencies: ["neutral", "unethical"]
+    rules:
+      - "Falha simplesmente não aconteceu"
+      - "Energy da ação é devolvida"
+    flavor: '"Era um teste. Você passou." (não era um teste)'
+
+  - id: "DIRT_FILE"
+    name: "Dirt File"
+    cost: 4
+    tier: 4
+    type: "passive"
+    effect: "1 NPC específico tem -3 em resistir sua Influência"
+    tendencies: ["unethical"]
+    rules:
+      - "Escolhe o NPC no loadout (antes da sessão)"
+      - "Funciona em TODOS os checks de INF contra esse NPC"
+      - "Se descoberto, vira inimigo permanente"
+    flavor: "Você sabe algo que ele prefere esconder."
+
+  - id: "SCAPEGOAT_READY"
+    name: "Scapegoat Ready"
+    cost: 4
+    tier: 4
+    type: "active"
+    uses: 1
+    effect: "Se falhar, pode tentar de novo imediatamente (nova abordagem)"
+    tendencies: ["neutral", "unethical"]
+    rules:
+      - "Segundo attempt é narrativamente diferente"
+      - "Gasta Energy normal da segunda tentativa"
+      - "DC pode aumentar em 2 (DM decide)"
+      - "Só funciona 1x por check (não pode encadear)"
+    flavor: '"Ok, isso não funcionou. Mas e se a gente olhar por outro ângulo?"'
+
+  # ── Tier 5 (Custo 5-6) ───────────────────────────────────────────────────────
+
+  - id: "EXECUTIVE_SPONSOR"
+    name: "Executive Sponsor"
+    cost: 5
+    tier: 5
+    type: "active"
+    uses: 1
+    effect: "+6 em qualquer roll (pode declarar DEPOIS de rolar)"
+    tendencies: ["ethical", "neutral"]
+    rules:
+      - "Pode usar depois de ver o resultado"
+      - "Funciona em qualquer tipo de check"
+    flavor: 'Seu sponsor aparece na hora certa. "Eu confio nele."'
+
+  - id: "BLAME_SHIFT"
+    name: "Blame Shift"
+    cost: 5
+    tier: 5
+    type: "active"
+    uses: 1
+    effect: "Transfere consequência de 1 falha para NPC presente"
+    tendencies: ["unethical"]
+    rules:
+      - "NPC precisa estar presente na cena"
+      - "Sua falha não te afeta"
+      - "NPC sofre as consequências (rep, energy, etc)"
+      - "Relacionamento com NPC cai 2 pontos"
+      - "Se NPC descobrir a verdade = inimigo permanente"
+    flavor: '"Mas foi o João que sugeriu isso na última reunião..."'
+
+  - id: "AUTO_SUCCESS"
+    name: "Auto Success"
+    cost: 6
+    tier: 5
+    type: "active"
+    uses: 1
+    effect: "1 check é sucesso automático (conta como roll 18)"
+    tendencies: ["unethical"]
+    rules:
+      - "NÃO funciona em DC 20+ (Legendary/Impossible)"
+      - "NÃO funciona em checks contestados (PvP)"
+      - "Conta como natural 18 (não é crítico)"
+      - "Pode ter consequências narrativas"
+    flavor: 'Você "resolveu" isso antes da reunião. Não pergunte como.'
+
+  - id: "PERFECT_TIMING"
+    name: "Perfect Timing"
+    cost: 5
+    tier: 5
+    type: "active"
+    uses: 1
+    effect: "Interrompe a vez de outro pra agir primeiro"
+    tendencies: ["neutral", "unethical"]
+    rules:
+      - 'Funciona como "readied action" instantânea'
+      - "Sua ação acontece ANTES da ação interrompida"
+      - "Só 1x por sessão"
+      - "Não pode interromper o próprio turno"
+    flavor: "Você antecipou o movimento dele."
+
+# ── Tendency summary ──────────────────────────────────────────────────────────
+
+tendencies:
+
+  ethical:
+    allowed_tiers:
+      1: ["COFFEE_BOOST", "EARLY_BIRD", "SMALL_TALK_PREP"]
+      2: ["MINOR_EDGE", "MEETING_NOTES", "SECOND_WIND", "COFFEE_CHAT_INTEL"]
+      3: ["PREPARED_ARGUMENT", "NETWORK_PING", "DELEGATE_TASK", "PAPER_TRAIL"]
+      4: ["MAJOR_EDGE", "CLUTCH_MOMENT"]
+      5: ["EXECUTIVE_SPONSOR"]
+    passive_effects:
+      - "+1 Reputation por sessão bem-sucedida"
+      - "NPCs éticos começam com +1 disposition"
+      - "Falhas públicas custam -2 Rep (vs -1 normal)"
+
+  neutral:
+    forbidden: ["DIRT_FILE", "BLAME_SHIFT", "AUTO_SUCCESS"]
+    passive_effects:
+      - "Pode trocar 1 bônus não-usado no meio da sessão (1x)"
+
+  unethical:
+    allowed_tiers:
+      1: ["COFFEE_BOOST", "EARLY_BIRD"]
+      2: ["MINOR_EDGE", "SECOND_WIND", "RUMOR_MILL", "COFFEE_CHAT_INTEL"]
+      3: ["SECOND_CHANCE", "SAFETY_NET"]
+      4: ["INSURANCE_POLICY", "DIRT_FILE", "SCAPEGOAT_READY"]
+      5: ["BLAME_SHIFT", "AUTO_SUCCESS", "PERFECT_TIMING"]
+    passive_effects:
+      - "+1 PC por sessão"
+      - "Intimidation checks têm +1"
+      - "NPCs éticos começam com -1 disposition"
+      - "Se pego em ato antiético, -3 Rep imediato"
+
+# ── Economy ───────────────────────────────────────────────────────────────────
+
+economy:
+  pc_per_session:
+    formula: "3 + floor(level / 5)"
+    table:
+      level_1_4: 3
+      level_5_9: 4
+      level_10_14: 5
+      level_15_19: 6
+      level_20: 7
+
+  slots:
+    levels_1_10: 1
+    levels_11_30: 2
+    levels_31_plus: 3
+
+  carry_over:
+    levels_1_10: { enabled: false, max: 0 }
+    levels_11_30: { enabled: true, max: 3 }
+    levels_31_plus: { enabled: true, max: 5 }

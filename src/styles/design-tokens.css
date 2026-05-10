@@ -1,0 +1,127 @@
+/* ──────────────────────────────────────────────────────────
+ * RPG Corp · Corporate Quest
+ * Design Tokens — Terminal Arcade v1
+ * ────────────────────────────────────────────────────────── */
+
+/* Fonts — load once in <head> of the root document:
+ *
+ * <link rel="preconnect" href="https://fonts.googleapis.com">
+ * <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ * <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+ */
+
+:root {
+  /* ── Color · Surfaces ───────────────────────────────────── */
+  --bg:          #0a0a0b;   /* app background */
+  --bg-2:        #121215;   /* elevated panel (sidebar, modal) */
+  --bg-3:        #1a1a1c;   /* app chrome (review wrapper) */
+
+  /* ── Color · Foreground ─────────────────────────────────── */
+  --fg:          #f2f2ea;   /* primary text, primary accent */
+  --fg-dim:      rgba(242,242,234,0.55);  /* secondary text, meta */
+  --fg-faint:    rgba(242,242,234,0.25);  /* tertiary, disabled */
+  --rule:        rgba(242,242,234,0.12);  /* borders, dividers */
+
+  /* ── Color · Semantic accents ───────────────────────────── */
+  --warn:        #e8c464;   /* NPC names, option keys, "feat", warnings */
+  --danger:      #e8493a;   /* failed rolls, negative modifiers, risk */
+  --ok:          #7dc993;   /* successful rolls, victory */
+
+  /* Rule: warn is reserved. Do not use it for decoration. */
+
+  /* ── Type · Families ────────────────────────────────────── */
+  --font-pixel:  'Press Start 2P', 'Silkscreen', monospace;
+  --font-mono:   'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* Press Start 2P is very wide — titles use tighter scale */
+  --pixel-adjust:   0.72;   /* scale multiplier for pixel headings */
+  --pixel-tracking: 0;      /* letter-spacing for pixel type */
+
+  /* ── Type · Scale ───────────────────────────────────────── */
+  /* Body / UI (mono) */
+  --fs-body:     17px;   /* narrative, DM messages, option text */
+  --fs-body-sm:  15px;   /* mobile body, secondary copy */
+  --fs-meta:     13px;   /* metadata, roll results */
+  --fs-label:    11px;   /* HUD values, option meta */
+  --fs-kicker:   10px;   /* section labels, UPPERCASE kickers */
+  --fs-tiny:     9px;    /* deepest meta, attr abbreviations */
+
+  /* Pixel headings — always multiplied by --pixel-adjust */
+  --fs-h1:       calc(clamp(28px, 4vw, 44px) * var(--pixel-adjust));
+  --fs-h2:       calc(22px * var(--pixel-adjust));
+  --fs-h3:       calc(18px * var(--pixel-adjust));
+  --fs-h4:       calc(14px * var(--pixel-adjust));
+
+  /* ── Type · Leading ─────────────────────────────────────── */
+  --lh-pixel:    1.3;    /* pixel headings — needs room, letters are tall */
+  --lh-tight:    1.35;   /* short UI text */
+  --lh-body:     1.65;   /* narrative — read-friendly */
+
+  /* ── Spacing ────────────────────────────────────────────── */
+  --sp-1:        4px;
+  --sp-2:        8px;
+  --sp-3:        12px;
+  --sp-4:        16px;
+  --sp-5:        20px;
+  --sp-6:        24px;
+  --sp-8:        32px;
+  --sp-10:       40px;
+  --sp-12:       48px;
+  --sp-16:       64px;
+
+  /* ── Borders & radii ────────────────────────────────────── */
+  --border-1:    1px solid var(--rule);
+  --border-fg:   1px solid var(--fg);
+  --border-dim:  1px solid var(--fg-dim);
+  --radius:      0;       /* terminal-arcade is sharp-cornered — no radius */
+
+  /* ── Effects · CRT (subtle, optional) ───────────────────── */
+  --crt-scanline: repeating-linear-gradient(
+    0deg,
+    transparent 0,
+    transparent 3px,
+    rgba(242,242,234,0.012) 3px,
+    rgba(242,242,234,0.012) 4px
+  );
+  --crt-vignette: radial-gradient(
+    ellipse at center, transparent 55%, rgba(0,0,0,0.4)
+  );
+  --cabinet-frame:
+    0 0 0 6px #0a0a0b,
+    0 0 0 7px rgba(242,242,234,0.10);
+
+  /* ── Animation ──────────────────────────────────────────── */
+  --ease:        cubic-bezier(0.2, 0, 0, 1);
+  --blink-dur:   1.2s;    /* cursor blink, LED blink */
+  --ui-dur:      0.15s;   /* hover/focus transitions */
+
+  /* ── Z layers ───────────────────────────────────────────── */
+  --z-crt:       1;       /* scanline overlay inside cabinet */
+  --z-vignette:  2;       /* vignette overlay inside cabinet */
+  --z-content:   3;       /* cabinet content above effects */
+  --z-tweak:     9999;    /* tweak panel (dev-only) */
+}
+
+/* ── Global reset rules that go with the tokens ─────────── */
+html, body {
+  font-family: var(--font-mono);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--fg);
+  background: var(--bg);
+  font-synthesis: none;     /* don't fake italic/bold for pixel fonts */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Pixel heading utility ──────────────────────────────── */
+.pixel-h {
+  font-family: var(--font-pixel);
+  font-weight: 400;
+  letter-spacing: var(--pixel-tracking);
+  line-height: var(--lh-pixel);
+  text-transform: uppercase;
+}
+.pixel-h em {
+  font-style: normal;     /* pixel fonts have no italic */
+  color: var(--warn);     /* use color for emphasis instead */
+}

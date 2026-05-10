@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Corporate Quest — Component Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link href="./design-tokens.css" rel="stylesheet">
+<link href="./components.css" rel="stylesheet">
+<style>
+  /* Doc-only styling (not part of the component lib) */
+  body { background: var(--bg-3); padding: 40px 24px 120px; }
+  .doc { max-width: 1100px; margin: 0 auto; }
+  .doc-h1 { font-family: var(--font-pixel); font-size: calc(28px * var(--pixel-adjust)); text-transform: uppercase; margin: 0 0 8px; line-height: 1.3; }
+  .doc-lede { font-family: var(--font-mono); font-size: 14px; color: var(--fg-dim); max-width: 640px; margin: 0 0 40px; line-height: 1.6; }
+  .doc-sec { margin: 56px 0; border-top: 1px solid var(--rule); padding-top: 28px; }
+  .doc-sec h2 { font-family: var(--font-pixel); font-size: calc(16px * var(--pixel-adjust)); text-transform: uppercase; margin: 0 0 6px; letter-spacing: 0.02em; color: var(--fg); }
+  .doc-sec p { font-family: var(--font-mono); font-size: 13px; color: var(--fg-dim); margin: 0 0 20px; line-height: 1.6; max-width: 680px; }
+  .doc-demo { padding: 32px; background: var(--bg); border: 1px solid var(--rule); margin-bottom: 16px; }
+  .doc-demo.pad-lg { padding: 40px; }
+  pre.code { background: #000; border: 1px solid var(--rule); padding: 14px 18px; font-family: var(--font-mono); font-size: 12px; color: var(--fg-dim); overflow-x: auto; margin: 0; line-height: 1.6; }
+  pre.code .tag { color: #7dc993; }
+  pre.code .attr { color: #e8c464; }
+  pre.code .cmt { color: rgba(242,242,234,0.3); }
+</style>
+</head>
+<body>
+
+<div class="doc">
+
+<h1 class="doc-h1">Corporate Quest · Component Library</h1>
+<p class="doc-lede">Isolated reference renders of every building block in the Terminal Arcade system. Each demo is the minimum markup + classes to reproduce the component. Styles live in <code>components.css</code>; tokens in <code>design-tokens.css</code>. Copy/paste-ready.</p>
+
+<!-- ═══════════ 01 · CABINET ═══════════ -->
+<section class="doc-sec">
+  <h2>01 · Cabinet</h2>
+  <p>The product shell. Wraps every screen. Applies: dark surface, thin border, outer double-border via box-shadow, inner CRT scanline + vignette overlays. All content must sit inside a child with <code>.cabinet-content</code> to render above the overlays.</p>
+  <div class="doc-demo pad-lg">
+    <div class="cabinet" style="min-height: 160px;">
+      <div class="cabinet-content" style="padding: 24px;">
+        <p style="margin:0;color:var(--fg);">Content sits here, above the scanline/vignette overlays.</p>
+      </div>
+    </div>
+  </div>
+  <pre class="code">&lt;div class="cabinet"&gt;
+  &lt;div class="cabinet-content"&gt;…your screen…&lt;/div&gt;
+&lt;/div&gt;</pre>
+</section>
+
+<!-- ═══════════ 02 · ARCADE BAR ═══════════ -->
+<section class="doc-sec">
+  <h2>02 · Arcade Bar (home chrome)</h2>
+  <p>Full arcade chrome — used ONLY on the Home / attract screen. LED blinks on <code>--blink-dur</code>.</p>
+  <div class="doc-demo" style="padding: 0;">
+    <div class="cabinet">
+      <div class="arcade-bar">
+        <span class="brand">◆ Corporate Quest</span>
+        <span class="coin">
+          <span><span class="led"></span> Insert coin</span>
+          <span>CP · 03</span>
+          <span>HI-SCORE · Lv 07</span>
+        </span>
+      </div>
+      <div class="cabinet-content" style="padding: 40px; text-align:center;">
+        <span style="font-family:var(--font-mono);font-size:12px;color:var(--fg-dim);letter-spacing:0.15em;text-transform:uppercase;">home content goes here</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 03 · SLIM BAR ═══════════ -->
+<section class="doc-sec">
+  <h2>03 · Slim Bar (gameplay chrome)</h2>
+  <p>Replaces arcade bar during gameplay. Shows a breadcrumb and session meta.</p>
+  <div class="doc-demo" style="padding: 0;">
+    <div class="cabinet">
+      <div class="slim-bar">
+        <span class="crumb">~/encounters/<b>daily-standup</b> · phase 2/3</span>
+        <span>session 07:42:18</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 04 · HUD ═══════════ -->
+<section class="doc-sec">
+  <h2>04 · HUD</h2>
+  <p>Resource strip shown during encounters. Bold values, dim labels.</p>
+  <div class="doc-demo" style="padding: 0;">
+    <div class="cabinet">
+      <div class="hud">
+        <span>⚡ <b>9</b>/10</span>
+        <span>CP · <b>3</b></span>
+        <span>REP · <b>+1</b></span>
+        <span>XP · <b>340</b>/500</span>
+        <span style="margin-left:auto;color:var(--warn);">Alan "Cabeça" · PM Jr · Lv 7</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 05 · DM MESSAGE ═══════════ -->
+<section class="doc-sec">
+  <h2>05 · DM Message (markdown narrative)</h2>
+  <p>Primary narrative block. Use <code>&lt;h2&gt;</code> for scene kickers, <code>&lt;blockquote&gt;</code> with <code>&lt;span class="npc"&gt;</code> for NPC dialogue, <code>&lt;em&gt;</code> for parenthetical tone.</p>
+  <div class="doc-demo">
+    <div class="msg msg-dm">
+      <h2>## cena</h2>
+      <p>Você entra na daily com dois minutos de atraso. <em>Marina</em>, engineer senior, está falando — algo sobre notificações.</p>
+      <blockquote><span class="npc">marina</span>: tem débito técnico aqui que pode explodir se o volume subir. fila síncrona, roda bem com 100 usuários, engasga com 10 mil.</blockquote>
+      <blockquote><span class="npc">caio</span> <em>(começa a digitar — provavelmente no #sales)</em></blockquote>
+      <p>Todo mundo olha pra você. É sua vez.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 06 · OPTIONS ═══════════ -->
+<section class="doc-sec">
+  <h2>06 · Options</h2>
+  <p>Action choices. Bracketed amber key, action text, optional parenthetical, meta (STAT + DC + tag).</p>
+  <div class="doc-demo">
+    <div class="opts">
+      <div class="opts-label">› Escolha uma ação</div>
+      <div class="opt focus">
+        <span class="opt-key">[a]</span>
+        <span class="opt-text">Perguntar à Marina detalhes técnicos <em style="color:var(--fg-dim);">— "arquitetura, escala ou legado?"</em></span>
+        <span class="opt-meta">TEC +3 · DC 12 <span class="tag fav">favorável</span></span>
+      </div>
+      <div class="opt">
+        <span class="opt-key">[b]</span>
+        <span class="opt-text">Acalmar Caio antes que o pânico espalhe no #sales</span>
+        <span class="opt-meta">INF +1 · DC 13 <span class="tag">neutro</span></span>
+      </div>
+      <div class="opt">
+        <span class="opt-key">[c]</span>
+        <span class="opt-text">Minimizar — "a gente monitora, segue o standup"</span>
+        <span class="opt-meta">INF +1 · DC 10 <span class="tag risk">risco</span></span>
+      </div>
+      <div class="opt">
+        <span class="opt-key">[d]</span>
+        <span class="opt-text">Pedir números concretos <em style="color:var(--warn);">(ativa Data-Driven)</em></span>
+        <span class="opt-meta">AWA −1 · DC 14 <span class="tag fav">feat</span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 07 · INPUT LINE ═══════════ -->
+<section class="doc-sec">
+  <h2>07 · Input Line</h2>
+  <p>Free-form action shell. Player types custom actions.</p>
+  <div class="doc-demo">
+    <div class="input-line">
+      <span class="prompt">$</span>
+      <input placeholder="ou digite uma ação criativa livre..." />
+      <span class="cur"></span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 08 · CHARACTER SIDEBAR ═══════════ -->
+<section class="doc-sec">
+  <h2>08 · Character Sidebar</h2>
+  <p>Fixed left panel (desktop). Drawer/sheet on mobile. Contains: name block, resources, attribute grid, roll history.</p>
+  <div class="doc-demo" style="padding: 24px;">
+    <div class="side" style="max-width: 300px;">
+      <div class="side-h">
+        <div class="name">Alan "Cabeça" <em>Turin</em></div>
+        <div class="title">Product Manager · Lv 7</div>
+        <div class="align">Neutral Good · Ex-Engineer</div>
+      </div>
+      <div class="side-sect">
+        <div class="side-label">Recursos</div>
+        <div class="bar-row">
+          <div class="top"><span class="k">Energia</span><span>9 / 10</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:90%"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="top"><span class="k">XP · Lv 7</span><span>340 / 500</span></div>
+          <div class="bar-track"><div class="bar-fill warn" style="width:68%"></div></div>
+        </div>
+      </div>
+      <div class="side-sect">
+        <div class="side-label">Atributos</div>
+        <div class="attr-grid">
+          <div class="attr"><div class="abbr">EXE</div><div class="v">12</div><div class="mod">+1</div></div>
+          <div class="attr"><div class="abbr">INF</div><div class="v">13</div><div class="mod">+1</div></div>
+          <div class="attr"><div class="abbr">TEC</div><div class="v">16</div><div class="mod">+3</div></div>
+          <div class="attr"><div class="abbr">RES</div><div class="v">12</div><div class="mod">+1</div></div>
+          <div class="attr"><div class="abbr">CRE</div><div class="v">15</div><div class="mod">+2</div></div>
+          <div class="attr"><div class="abbr">AWA</div><div class="v">08</div><div class="mod" style="color:var(--danger);">−1</div></div>
+        </div>
+      </div>
+      <div class="side-sect" style="border-bottom: 0;">
+        <div class="side-label">Histórico</div>
+        <div class="log-row"><b>TEC</b> d20=15 +3 = 18 vs DC 12 <span class="ok">✓ crit</span></div>
+        <div class="log-row"><b>INF</b> d20=08 +1 = 9 vs DC 13 <span class="fail">✗</span></div>
+        <div class="log-row"><b>AWA</b> d20=12 −1 = 11 vs DC 10 <span class="ok">✓</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 09 · REWARDS GRID ═══════════ -->
+<section class="doc-sec">
+  <h2>09 · Rewards Grid</h2>
+  <p>Stage clear summary. 4-up grid on desktop, 2-up on mobile. Numbers in pixel; positive values in amber.</p>
+  <div class="doc-demo">
+    <div class="result-rewards">
+      <div class="rw"><div class="l">XP</div><div class="v"><em>+35</em></div></div>
+      <div class="rw"><div class="l">Capital pol.</div><div class="v"><em>+1</em></div></div>
+      <div class="rw"><div class="l">Reputação</div><div class="v"><em>+1</em></div></div>
+      <div class="rw"><div class="l">Energia gasta</div><div class="v">1</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 10 · BUTTONS ═══════════ -->
+<section class="doc-sec">
+  <h2>10 · Buttons</h2>
+  <p>Primary (<code>.btn</code>) and ghost (<code>.btn.ghost</code>). Plus <code>.press-start</code> for the home CTA.</p>
+  <div class="doc-demo" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+    <button class="press-start">▶ Press Start</button>
+    <button class="btn">▶ próximo encounter</button>
+    <button class="btn ghost">↓ salvar &amp; sair</button>
+  </div>
+</section>
+
+<!-- ═══════════ 11 · KICKERS & LABELS ═══════════ -->
+<section class="doc-sec">
+  <h2>11 · Kickers &amp; Meta Labels</h2>
+  <p>Utility text styles for tiny UPPERCASE labels.</p>
+  <div class="doc-demo" style="display: grid; gap: 12px;">
+    <div><span class="kicker">Encounter 01 · Stage clear</span></div>
+    <div><span class="kicker" style="color: var(--warn);">Character Select · Class</span></div>
+    <div><span class="meta">09:47 · Phase 2</span></div>
+  </div>
+</section>
+
+</div>
+
+</body>
+</html>
