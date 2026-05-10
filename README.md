@@ -360,4 +360,4 @@ A IA faz o resto — inventa NPCs, diálogos, consequências e rolagens.
 
 ## 📄 Licença
 
-MIT
+GPL v3
