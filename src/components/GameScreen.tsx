@@ -10,8 +10,13 @@ import { useAuthSession } from '@/hooks/useAuthSession';
 import LoginDialog from './LoginDialog';
 
 export default function GameScreen() {
-  const { character, encounter, diceLog } = useGame();
+  const { character, encounter, diceLog, setScreen } = useGame();
   const { user, signOut } = useAuthSession();
+
+  const handleExit = async () => {
+    await signOut();
+    setScreen('home');
+  };
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [resultReady, setResultReady] = useState(false);
 
@@ -50,7 +55,7 @@ export default function GameScreen() {
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             {user ? (
-              <button className="btn ghost" style={{ fontSize: '10px', padding: '4px 10px' }} onClick={signOut}>SAIR</button>
+              <button className="btn ghost" style={{ fontSize: '10px', padding: '4px 10px' }} onClick={handleExit}>SAIR</button>
             ) : (
               <LoginDialog
                 trigger={<button className="btn ghost" style={{ fontSize: '10px', padding: '4px 10px' }}>ENTRAR</button>}
