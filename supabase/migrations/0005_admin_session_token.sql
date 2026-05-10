@@ -42,9 +42,11 @@ BEGIN
   SELECT admin_session_token, admin_session_expires_at INTO v_token, v_expires FROM public.admin_config WHERE id = 1;
   IF p_token IS DISTINCT FROM v_token OR now() > v_expires THEN RAISE EXCEPTION 'Unauthorized'; END IF;
   RETURN QUERY
-    SELECT p.id, p.full_name, p.email, p.phone, p.company_name, p.linkedin_url,
-           p.has_product_openings, p.rating, p.feedback, p.character_snapshot,
-           p.created_at, p.updated_at, u.last_sign_in_at
+    SELECT
+      p.id        AS id,
+      p.full_name, p.email, p.phone, p.company_name, p.linkedin_url,
+      p.has_product_openings, p.rating, p.feedback, p.character_snapshot,
+      p.created_at, p.updated_at, u.last_sign_in_at
     FROM public.profiles p
     LEFT JOIN auth.users u ON (u.id = p.id)
     ORDER BY p.created_at DESC;
