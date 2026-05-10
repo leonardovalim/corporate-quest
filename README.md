@@ -200,6 +200,7 @@ Edite `.env` com seus valores:
 NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
 ```
+Caso não tenha uma conta, crie sua conta no Supabase em https://supabase.com/ e clique em Connect para copiar as variáveis acima.
 
 ### 3. Configure o Supabase
 
@@ -315,15 +316,6 @@ bun run lint       # ESLint
 bun run test       # Vitest (execução única)
 bun run test:watch # Vitest em modo watch
 ```
-
-### Capturar screenshots para o README
-
-```bash
-npm i -D puppeteer       # Instalar (uma vez)
-bun run dev              # Rodar o servidor
-node docs/capture-screenshots.mjs  # Capturar todas as telas
-```
-
 ---
 
 ## 🧰 Stack
