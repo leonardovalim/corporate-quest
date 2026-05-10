@@ -37,9 +37,10 @@ RETURNS TABLE (
   updated_at timestamptz, last_sign_in_at timestamptz
 )
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, extensions AS $$
+#variable_conflict use_column
 DECLARE v_token text; v_expires timestamptz;
 BEGIN
-  SELECT admin_session_token, admin_session_expires_at INTO v_token, v_expires FROM public.admin_config WHERE id = 1;
+  SELECT admin_session_token, admin_session_expires_at INTO v_token, v_expires FROM public.admin_config WHERE admin_config.id = 1;
   IF p_token IS DISTINCT FROM v_token OR now() > v_expires THEN RAISE EXCEPTION 'Unauthorized'; END IF;
   RETURN QUERY
     SELECT
