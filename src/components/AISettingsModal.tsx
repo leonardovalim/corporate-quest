@@ -137,7 +137,7 @@ export default function AISettingsModal({ onConfigChange, triggerVariant = 'icon
                 </button>
               </div>
               <p className="text-[10px] text-muted-foreground">
-                Sua chave fica apenas no seu browser (localStorage).
+                Sua chave é salva no localStorage do seu browser. Não use esta opção em computadores compartilhados.
               </p>
             </div>
           )}

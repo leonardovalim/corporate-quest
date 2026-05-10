@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react';
+import DOMPurify from 'dompurify';
 import { useGame } from '@/game/GameContext';
 import { streamChat } from '@/game/streamChat';
 import { buildSystemPrompt } from '@/game/systemPrompt';
@@ -653,13 +654,13 @@ export default function NarrativeChat() {
               style={{ animation: 'fadeIn 0.2s ease' }}
             >
               {msg.role === 'dm' && (
-                <div dangerouslySetInnerHTML={{ __html: renderDMContent(msg.content) }} />
+                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderDMContent(msg.content), { ALLOWED_TAGS: ['h2', 'p', 'strong', 'em'] }) }} />
               )}
               {msg.role === 'player' && (
                 <span>{renderInlineBold(msg.content)}</span>
               )}
               {msg.role === 'system' && (
-                <span dangerouslySetInnerHTML={{ __html: renderSysContent(msg.content) }} />
+                <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderSysContent(msg.content), { ALLOWED_TAGS: ['span'], ALLOWED_ATTR: ['class', 'style'] }) }} />
               )}
             </div>
           ))}
