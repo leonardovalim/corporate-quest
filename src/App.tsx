@@ -7,8 +7,14 @@ import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import AdminPage from "./pages/AdminPage.tsx";
 import GlobalSupportModalHost from "./components/GlobalSupportModalHost";
+import { useCanny } from "@/hooks/useCanny";
 
 const queryClient = new QueryClient();
+
+function CanyInitializer() {
+  useCanny();
+  return null;
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -16,6 +22,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <CanyInitializer />
         <GlobalSupportModalHost />
         <Routes>
           <Route path="/" element={<Index />} />
