@@ -172,7 +172,7 @@ export default function OnboardingWizard() {
                   onChange={e => setName(e.target.value)}
                   placeholder="seu nome corporativo..."
                   autoFocus
-                  style={{ textAlign: 'left' }}
+                  style={{ textAlign: 'left', fontSize: '16px' }}
                 />
                 {name && <span className="cur" />}
               </div>
