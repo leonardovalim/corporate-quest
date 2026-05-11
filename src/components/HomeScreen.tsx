@@ -123,11 +123,11 @@ export default function HomeScreen() {
                     <button
                       key={save.id}
                       className="btn ghost"
-                      style={{ justifyContent: 'space-between', fontSize: '11px', padding: '8px 10px' }}
+                      style={{ justifyContent: 'space-between', fontSize: '11px', padding: '8px 12px', gap: '12px' }}
                       onClick={() => handleContinueSave(save.id)}
                     >
-                      <span>{save.character_name}</span>
-                      <span style={{ color: 'var(--warn)' }}>Lv {save.level}</span>
+                      <span style={{ minWidth: 0, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{save.character_name}</span>
+                      <span style={{ color: 'var(--warn)', flexShrink: 0 }}>Lv {save.level}</span>
                     </button>
                   ))}
                 </div>

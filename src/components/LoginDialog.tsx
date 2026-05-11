@@ -42,7 +42,7 @@ export default function LoginDialog({ trigger }: Props) {
       if (error) throw error;
       toast({
         title: 'Magic link enviado 📧',
-        description: 'Cheque seu e-mail. Spoiler: não é o boleto.',
+        description: 'Cheque seu inbox',
       });
       setOpen(false);
       setEmail('');
