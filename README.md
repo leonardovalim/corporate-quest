@@ -8,10 +8,17 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/leonardovalim/corporate-quest/stargazers"><img src="https://img.shields.io/github/stars/leonardovalim/corporate-quest?style=flat-square&logo=github&color=333" alt="Stars" /></a>
+  <a href="https://github.com/leonardovalim/corporate-quest/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-GPL%20v3-blue?style=flat-square" alt="License" /></a>
+  <a href="https://corporatequest.net"><img src="https://img.shields.io/badge/Demo-Online-green?style=flat-square" alt="Demo Online" /></a>
+</p>
+
+<p align="center">
   <a href="https://corporatequest.net">🎮 Jogar agora</a> ·
   <a href="#-o-que-é">📖 Como funciona</a> ·
   <a href="#%EF%B8%8F-self-hosting">🛠️ Self-hosting</a> ·
-  <a href="#-mecânicas-do-jogo">🎲 Mecânicas</a>
+  <a href="#-mecânicas-do-jogo">🎲 Mecânicas</a> ·
+  <a href="CHANGELOG.md">📋 Changelog</a>
 </p>
 
 ---

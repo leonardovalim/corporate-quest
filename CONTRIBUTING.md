@@ -1,5 +1,29 @@
 # Contributing to Corporate Quest
 
+## Reporting Issues
+
+### Bug Reports
+
+Found something broken? [Open a GitHub issue](https://github.com/leonardovalim/corporate-quest/issues/new?labels=bug) with:
+
+- **Title**: Clear description of the bug (e.g., "_Logout button doesn't clear character state_")
+- **Environment**: Your OS, browser, and how you're running it (demo or self-hosted)
+- **Steps to reproduce**: Exactly how to trigger the bug
+- **Expected vs actual**: What should happen vs. what actually happens
+- **Screenshots/video**: If it's a visual or gameplay bug, a screenshot helps
+
+### Feature Requests
+
+Have an idea? [Open a GitHub issue](https://github.com/leonardovalim/corporate-quest/issues/new?labels=enhancement) with:
+
+- **Title**: What you want to add (e.g., "_Support for custom encounter difficulty scaling_")
+- **Motivation**: Why this would be valuable
+- **Proposed solution**: How you'd implement it (optional, we'll brainstorm)
+
+### Security Vulnerabilities
+
+**Do not open a public issue.** See [SECURITY.md](SECURITY.md) for private reporting.
+
 ## Prerequisites
 
 - [Bun](https://bun.sh) (or Node 18+)
