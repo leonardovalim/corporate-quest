@@ -3,6 +3,7 @@ import { useGame } from '@/game/GameContext';
 import LoginDialog from './LoginDialog';
 import { useAuthSession } from '@/hooks/useAuthSession';
 import { useGameSaves } from '@/hooks/useGameSaves';
+import CanyFeedbackButton from './CanyFeedbackButton';
 
 export default function HomeScreen() {
   const {
@@ -76,6 +77,7 @@ export default function HomeScreen() {
               <span className="led" />
               INSERT COIN
             </span>
+            {user && <CanyFeedbackButton />}
             {hasSnapshot && <span>CP · {pc}</span>}
             {hasSnapshot && <span>HI-SCORE · LV {level}</span>}
           </div>
