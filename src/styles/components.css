@@ -241,6 +241,10 @@
   font-family: inherit;
   font-size: inherit;
 }
+/* prevent iOS/Android auto-zoom on focus (triggered when font-size < 16px) */
+@media (max-width: 768px) {
+  .input-line input { font-size: 16px; }
+}
 .cur {
   display: inline-block;
   width: 8px; height: 15px;
