@@ -8,6 +8,7 @@ import { getCurrentLevelProgress } from '@/game/leveling';
 import { getEnergyStatus } from '@/game/checks';
 import { useAuthSession } from '@/hooks/useAuthSession';
 import LoginDialog from './LoginDialog';
+import CanyFeedbackButton from './CanyFeedbackButton';
 
 export default function GameScreen() {
   const { character, encounter, diceLog, setScreen } = useGame();
@@ -54,6 +55,7 @@ export default function GameScreen() {
             )}
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {user && <CanyFeedbackButton />}
             {user ? (
               <button className="btn ghost" style={{ fontSize: '10px', padding: '4px 10px' }} onClick={handleExit}>SAIR</button>
             ) : (
