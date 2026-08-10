@@ -219,12 +219,31 @@ Caso não tenha uma conta, crie sua conta no Supabase em https://supabase.com/ e
 supabase/migrations/*.sql  →  execute cada arquivo no SQL Editor (ordem cronológica)
 ```
 
-4. Acesse `/admin` com usuário `admin` e senha `admin` (padrão pós-instalação). Vá em **Segurança** e troque a senha imediatamente.
+4. Vá em **Authentication → Sign In / Providers** e **habilite "Anonymous sign-ins"**.
+
+   O jogo é jogável sem cadastro, mas a edge function do DM exige um usuário
+   autenticado (senão qualquer um consome seus créditos de LLM). O visitante
+   sem cadastro entra via sessão anônima. **Sem essa opção ligada, a primeira
+   tela do DM não carrega.**
+
+5. Defina a senha do painel admin. A migration `0005` deixa o painel trancado
+   até você definir uma — a senha padrão `admin` do `0004` não vale mais, já
+   que este repositório é público. No **SQL Editor**:
+
+   ```sql
+   UPDATE public.admin_auth
+   SET admin_password_hash = extensions.crypt('SUA_SENHA_FORTE', extensions.gen_salt('bf')),
+       updated_at = now()
+   WHERE id = 1;
+   ```
+
+   Depois acesse `/admin` com usuário `admin` e essa senha.
 
 As migrations criam:
 - `profiles` — dados de perfil dos usuários
 - `game_saves` — saves de partida com RLS (somente o dono acessa)
-- `admin_config` — configuração global de LLM + senha do admin
+- `admin_config` — configuração global de LLM (leitura pública, só `ai_config`)
+- `admin_auth` — senha e sessão do admin, sem acesso via API
 - `game_logs` — logs de eventos por turno
 
 ### 4. Configure o LLM
@@ -248,6 +267,11 @@ Acesse `/admin` e na aba **Configuração de IA**, selecione o provedor e modelo
 | Google Gemini | gemini-2.5-flash, gemini-2.5-pro | Sim |
 | Ollama | qualquer modelo local | Não |
 | Custom | qualquer endpoint OpenAI-compatible | Opcional |
+
+> **Provedor padrão (`lovable`)**: roteia pela edge function `corporate-quest-dm`,
+> que precisa do secret `LOVABLE_API_KEY` configurado em **Edge Functions →
+> Secrets**. Sem ele, todo turno do DM falha com `503`. Se você não usa o gateway
+> da Lovable, escolha outro provedor no painel admin ou nas configurações in-game.
 
 Para Ollama local, defina a base URL como `http://localhost:11434` e o modelo desejado (ex: `llama3`, `gemma4`).
 

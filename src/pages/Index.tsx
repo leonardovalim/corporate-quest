@@ -12,6 +12,7 @@ import { useSupportPrompt } from '@/hooks/useSupportPrompt';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useAuthSession } from '@/hooks/useAuthSession';
+import { isRealUser } from '@/lib/session';
 import { useGameAutosave } from '@/hooks/useGameAutosave';
 
 function GameRouter() {
@@ -67,7 +68,9 @@ function AutosaveHost() {
 function ProfilePersistor() {
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event !== 'SIGNED_IN' || !session?.user) return;
+      // O anonymous sign-in também emite SIGNED_IN — ignorar, senão cada
+      // visitante geraria uma linha em profiles e um toast de boas-vindas.
+      if (event !== 'SIGNED_IN' || !isRealUser(session?.user)) return;
       const raw = localStorage.getItem('pendingProfile');
 
       // Defer Supabase call to avoid deadlock

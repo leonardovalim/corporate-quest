@@ -603,7 +603,7 @@ function SecurityTab() {
     if (next !== confirm) { setMsg({ type: 'error', text: 'Nova senha e confirmação não coincidem' }); return; }
     setSaving(true);
     setMsg(null);
-    const { error } = await supabase.rpc('change_admin_password' as any, {
+    const { error } = await supabase.rpc('change_admin_password', {
       p_current_password: current,
       p_new_password: next,
     });

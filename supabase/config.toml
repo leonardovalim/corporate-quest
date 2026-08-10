@@ -2,3 +2,8 @@ project_id = "your-project-id"
 
 [functions.process-email-queue]
 verify_jwt = true
+
+# A função valida o token ela mesma (via supabase.auth.getUser), o que permite
+# devolver erro em JSON legível em vez do 401 opaco do gateway.
+[functions.corporate-quest-dm]
+verify_jwt = false
