@@ -104,9 +104,14 @@ function AIConfigTab() {
   const handleSave = async () => {
     setSaving(true);
     setStatusMsg(null);
+    // A chave NUNCA vai para o config global: admin_config é de leitura pública
+    // e, mesmo que não fosse, o cliente usa a chave direto do navegador. Cada
+    // jogador informa a sua em Configurações de IA. O servidor também descarta
+    // este campo (migration 0006) — aqui é só para não enviá-lo de saída.
+    const { apiKey: _discarded, ...globalConfig } = config;
     const { error } = await supabase.rpc('update_admin_ai_config', {
       p_token: getStoredToken(),
-      p_config: config as any,
+      p_config: globalConfig as any,
     });
     setSaving(false);
     if (error) {
@@ -188,16 +193,22 @@ function AIConfigTab() {
         )}
       </div>
 
-      {/* API Key */}
+      {/* API Key — só para o teste de conexão abaixo; nunca é salva no config global */}
       {provider.needsKey && (
         <div className="space-y-2">
-          <Label>API Key</Label>
+          <Label>API Key <span className="opacity-60">(não é salva)</span></Label>
           <Input
             type="password"
             value={config.apiKey}
             onChange={e => setConfig(c => ({ ...c, apiKey: e.target.value }))}
             placeholder="sk-..."
           />
+          <p className="text-xs opacity-70">
+            Usada apenas para o teste de conexão nesta tela. A configuração global
+            guarda somente provedor e modelo — uma chave global ficaria visível
+            para qualquer visitante, já que o navegador chama o provedor direto.
+            Cada jogador informa a sua em <strong>Configurações de IA</strong>.
+          </p>
         </div>
       )}
 

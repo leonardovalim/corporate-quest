@@ -258,6 +258,15 @@ Após fazer login, clique no ícone de engrenagem → **Configurações de IA** 
 
 Acesse `/admin` e na aba **Configuração de IA**, selecione o provedor e modelo.
 
+> ⚠️ **A configuração global não guarda chave de API — por segurança, não por
+> limitação.** `admin_config` é de leitura pública (o jogo precisa saber
+> provedor/modelo), e mesmo que não fosse, o navegador chama o provedor
+> diretamente: uma chave global apareceria no DevTools de qualquer visitante.
+> O painel define provedor e modelo; a chave é sempre de quem joga (opção A,
+> salva só no `localStorage` dele). Para uma chave compartilhada de verdade, ela
+> precisa ficar no servidor, como secret de uma edge function que faz o proxy —
+> é o que a `corporate-quest-dm` faz com o provedor padrão.
+
 #### Provedores suportados
 
 | Provedor | Modelos | Necessita chave? |

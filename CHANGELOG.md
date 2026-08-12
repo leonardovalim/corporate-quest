@@ -8,6 +8,14 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Security
+- **Chave de API sai da configuração global** (migration `0006`). `ai_config`
+  guardava o `AIConfig` inteiro, incluindo `apiKey`, numa tabela de leitura
+  pública — uma chave da OpenAI configurada pelo painel ficava legível para
+  qualquer portador da publishable key. E o banco era só metade do problema: o
+  cliente usa `aiConfig.apiKey` para chamar o provedor direto do navegador, então
+  uma chave global apareceria no DevTools de qualquer jogador de todo jeito.
+  Agora a config global define apenas provedor/modelo, a RPC descarta `apiKey`
+  antes de gravar, e o painel não envia mais o campo.
 - **Segredos do admin saem de `admin_config`** (migration `0005`). A tabela tinha
   policy de leitura pública e guardava `admin_password_hash` +
   `admin_session_token`: qualquer portador da publishable key lia um token de

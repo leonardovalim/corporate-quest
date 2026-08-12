@@ -1,4 +1,4 @@
-import type { AIConfig } from './aiConfig';
+import { requiresApiKey, type AIConfig } from './aiConfig';
 import { ensureSession, AnonSessionError } from '@/lib/session';
 
 type Msg = { role: string; content: string };
@@ -380,6 +380,14 @@ export async function streamChat({
     ollama: streamOllama,
     custom: streamCustom,
   };
+
+  // Falha cedo e com instrução, em vez de deixar o provedor devolver um 401 cru.
+  if (requiresApiKey(aiConfig.provider) && !aiConfig.apiKey) {
+    throw new Error(
+      `O provedor "${aiConfig.provider}" precisa de uma chave de API. ` +
+      `Abra Configurações de IA e informe a sua — ela fica salva só neste navegador.`
+    );
+  }
 
   const handler = handlers[aiConfig.provider] || streamLovable;
   const startTime = Date.now();
