@@ -5,7 +5,7 @@ import { streamChat } from '@/game/streamChat';
 import { buildSystemPrompt } from '@/game/systemPrompt';
 import { resolveCheck, createDiceLog, getEnergyCost, getEnergyStatus } from '@/game/checks';
 import { pickEncounterForLevel, ENCOUNTERS, createEncounterFromTemplate, pickEncounterTemplate } from '@/game/encounter';
-import { loadAIConfig } from '@/game/aiConfig';
+import { resolveAIConfig } from '@/game/aiConfig';
 import { useAdminConfig } from '@/hooks/useAdminConfig';
 import { useGameLogger } from '@/hooks/useGameLogger';
 import { getModifier } from '@/game/dice';
@@ -212,7 +212,8 @@ export default function NarrativeChat() {
     }
 
     const startTime = Date.now();
-    const usedConfig = adminConfig ?? loadAIConfig();
+    // provider/model vêm do painel admin; a chave é sempre a do próprio jogador
+    const usedConfig = resolveAIConfig(adminConfig);
 
     try {
       const sysPrompt = buildSystemPrompt(char, encounterRef.current, window.innerWidth < 768);

@@ -4,7 +4,7 @@ import { ENCOUNTERS, createEncounterFromTemplate, pickNextEncounters, type Encou
 import { getLevelFromXP } from '@/game/leveling';
 import LevelUpOverlay from './LevelUpOverlay';
 import SaveProgressCard from './SaveProgressCard';
-import { supabase } from '@/integrations/supabase/client';
+import { getRealSession } from '@/lib/session';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 export default function EncounterResultScreen() {
@@ -100,9 +100,9 @@ export default function EncounterResultScreen() {
   useEffect(() => {
     if (outcome === 'fired') return; // fired screens handle their own CTA
     let cancelled = false;
-    supabase.auth.getSession().then(({ data }) => {
+    getRealSession().then((session) => {
       if (cancelled) return;
-      if (data.session) return; // already logged in
+      if (session) return; // already logged in (sessão anônima não conta)
       const matchCount = Number(localStorage.getItem('cq.saveMatchCount') || 0) + 1;
       localStorage.setItem('cq.saveMatchCount', String(matchCount));
       const lastShown = Number(localStorage.getItem('cq.saveCardLastShownAtMatch') ?? -99);
@@ -143,8 +143,8 @@ export default function EncounterResultScreen() {
   };
 
   const handleReturnHomeIntent = async () => {
-    const { data } = await supabase.auth.getSession();
-    if (data.session) {
+    const session = await getRealSession();
+    if (session) {
       handleReturnHome();
       return;
     }

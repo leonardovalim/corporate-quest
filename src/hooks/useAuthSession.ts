@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { isRealUser } from '@/lib/session';
 
 interface ProfileLite {
   full_name: string | null;
@@ -65,11 +66,20 @@ export function useAuthSession() {
   };
 
   useEffect(() => {
+    // Sessão anônima (criada para liberar a edge function do DM) NÃO é cadastro:
+    // este hook enxerga só usuários de verdade, senão o app trataria todo
+    // visitante como logado e sumiria com os CTAs de salvar progresso.
+    const applySession = (sess: Session | null) => {
+      const realSession = isRealUser(sess?.user) ? sess : null;
+      setSession(realSession);
+      setUser(realSession?.user ?? null);
+      return realSession;
+    };
+
     // Subscribe FIRST
     const { data: sub } = supabase.auth.onAuthStateChange((_event, sess) => {
-      setSession(sess);
-      setUser(sess?.user ?? null);
-      if (!sess?.user) {
+      const realSession = applySession(sess);
+      if (!realSession) {
         setProfile(null);
         setProfileLoading(false);
         return;
@@ -78,18 +88,17 @@ export function useAuthSession() {
       setProfileLoading(true);
       // Defer actual Supabase call to avoid deadlock in auth callback
       setTimeout(() => {
-        refreshProfile(sess.user.id);
+        refreshProfile(realSession.user.id);
       }, 0);
     });
 
     // Then check existing session
     supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
+      const realSession = applySession(data.session);
       setLoading(false);
-      if (data.session?.user) {
+      if (realSession) {
         setProfileLoading(true);
-        refreshProfile(data.session.user.id);
+        refreshProfile(realSession.user.id);
       } else {
         setProfileLoading(false);
       }

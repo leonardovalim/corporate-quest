@@ -37,17 +37,30 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Reject unauthenticated (anon) requests to prevent API credit abuse
+  // Exige um usuário autenticado para não deixar os créditos de LLM abertos ao
+  // mundo. Jogadores sem cadastro entram via anonymous sign-in do Supabase — o
+  // cliente cria a sessão antes de chamar aqui (ver src/lib/session.ts).
+  //
+  // Atenção: o Bearer precisa ser o access_token da sessão. A publishable key
+  // NÃO é um JWT de usuário e cai no 401 abaixo.
   const authHeader = req.headers.get("Authorization");
-  if (!authHeader) return jsonError("Unauthorized", 401);
+  if (!authHeader) {
+    return jsonError("Missing Authorization header (envie o access_token da sessão)", 401);
+  }
 
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
     Deno.env.get("SUPABASE_ANON_KEY") ?? "",
     { global: { headers: { Authorization: authHeader } } }
   );
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return jsonError("Unauthorized", 401);
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (!user) {
+    console.error("auth rejected:", authError?.message ?? "no user for token");
+    return jsonError(
+      "Sessão inválida ou expirada. Recarregue a página para obter uma nova.",
+      401
+    );
+  }
 
   try {
     const body = await req.json().catch(() => null);
@@ -95,7 +108,15 @@ serve(async (req) => {
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    if (!LOVABLE_API_KEY) {
+      // Secret ausente derruba 100% dos turnos do DM. Responder explícito para
+      // não parecer erro de rede ou de crédito no cliente.
+      console.error("LOVABLE_API_KEY secret is missing on this project");
+      return jsonError(
+        "LOVABLE_API_KEY não está configurada nesta instância (Edge Functions → Secrets).",
+        503
+      );
+    }
 
     const response = await fetch(
       "https://ai.gateway.lovable.dev/v1/chat/completions",

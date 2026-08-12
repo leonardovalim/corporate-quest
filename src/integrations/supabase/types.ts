@@ -14,21 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_auth: {
+        Row: {
+          admin_password_hash: string | null
+          admin_session_expires_at: string | null
+          admin_session_token: string | null
+          id: number
+          updated_at: string
+        }
+        Insert: {
+          admin_password_hash?: string | null
+          admin_session_expires_at?: string | null
+          admin_session_token?: string | null
+          id?: number
+          updated_at?: string
+        }
+        Update: {
+          admin_password_hash?: string | null
+          admin_session_expires_at?: string | null
+          admin_session_token?: string | null
+          id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       admin_config: {
         Row: {
-          admin_password: string | null
           ai_config: Json
           id: number
           updated_at: string
         }
         Insert: {
-          admin_password?: string | null
           ai_config?: Json
           id?: number
           updated_at?: string
         }
         Update: {
-          admin_password?: string | null
           ai_config?: Json
           id?: number
           updated_at?: string
@@ -276,9 +297,15 @@ profiles: {
         }
         Returns: void
       }
-      get_all_profiles_for_admin: {
+      create_admin_session: {
         Args: {
           p_password: string
+        }
+        Returns: string
+      }
+      get_all_profiles_for_admin: {
+        Args: {
+          p_token: string
         }
         Returns: {
           id: string
@@ -298,7 +325,7 @@ profiles: {
       }
       get_game_logs_for_admin: {
         Args: {
-          p_password: string
+          p_token: string
           p_limit?: number
           p_event?: string
         }
@@ -317,16 +344,10 @@ profiles: {
       }
       update_admin_ai_config: {
         Args: {
-          p_password: string
+          p_token: string
           p_config: Json
         }
         Returns: void
-      }
-      verify_admin_password: {
-        Args: {
-          p_password: string
-        }
-        Returns: boolean
       }
     }
     Enums: {}

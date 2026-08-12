@@ -1,4 +1,5 @@
-import type { AIConfig } from './aiConfig';
+import { requiresApiKey, type AIConfig } from './aiConfig';
+import { ensureSession, AnonSessionError } from '@/lib/session';
 
 type Msg = { role: string; content: string };
 
@@ -69,22 +70,59 @@ function isTransientNetworkError(err: unknown): boolean {
   return /load failed|failed to fetch|network|aborted|err_network|connection/i.test(msg);
 }
 
+/** Erro que já carrega uma mensagem pronta para o jogador — não deve ser reembrulhado. */
+class DMError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'DMError';
+  }
+}
+
+/** A edge function responde erro em JSON ({"error": "..."}); texto puro é fallback. */
+function extractServerError(body: string): string {
+  try {
+    const parsed = JSON.parse(body);
+    if (parsed && typeof parsed.error === 'string') return parsed.error;
+  } catch { /* não era JSON */ }
+  return body.slice(0, 200) || 'sem detalhes';
+}
+
 async function streamLovableOnce(messages: Msg[], aiConfig: AIConfig, onDelta: (text: string) => void) {
-  const url = `${import.meta.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/corporate-quest-dm`;
-  const resp = await fetch(url, {
+  const baseUrl = import.meta.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  if (!baseUrl || !anonKey) {
+    throw new DMError(
+      'Build sem as variáveis do Supabase (NEXT_PUBLIC_SUPABASE_URL / _PUBLISHABLE_KEY). ' +
+      'Elas são injetadas em build time — refaça o build com o .env correto.'
+    );
+  }
+
+  // A função exige usuário autenticado; visitante sem cadastro entra via sessão anônima.
+  const session = await ensureSession();
+
+  const resp = await fetch(`${baseUrl}/functions/v1/corporate-quest-dm`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}`,
+      apikey: anonKey,
+      Authorization: `Bearer ${session.access_token}`,
     },
     body: JSON.stringify({ messages, model: aiConfig.model }),
   });
+
   if (!resp.ok || !resp.body) {
-    const errText = await resp.text().catch(() => 'Unknown error');
-    if (resp.status === 429) throw new Error('Rate limit exceeded. Aguarde um momento.');
-    if (resp.status === 402) throw new Error('Créditos esgotados. Adicione créditos no workspace.');
-    throw new Error(`AI error: ${errText}`);
+    const errText = await resp.text().catch(() => '');
+    const detail = extractServerError(errText);
+    if (resp.status === 429) throw new DMError('Rate limit atingido. Aguarde um momento.');
+    if (resp.status === 402) throw new DMError('Créditos de IA esgotados. Adicione créditos no workspace.');
+    if (resp.status === 401 || resp.status === 403) {
+      throw new DMError('Sua sessão expirou ou é inválida. Recarregue a página para continuar.');
+    }
+    // 5xx quase sempre é configuração faltando no servidor (secret de API, por
+    // exemplo). Repassar a mensagem crua evita horas de diagnóstico às cegas.
+    throw new DMError(`Servidor do jogo respondeu ${resp.status}: ${detail}`);
   }
+
   await readStream(resp.body, onDelta);
 }
 
@@ -102,15 +140,26 @@ async function streamLovable(messages: Msg[], aiConfig: AIConfig, onDelta: (text
       lastErr = err;
       // Don't retry if we already started receiving content (would duplicate output)
       // or if it's a non-transient error (rate limit, auth, etc.)
-      if (receivedAny || !isTransientNetworkError(err)) throw err;
+      // DMError/AnonSessionError já vêm com mensagem final — repassa intactos.
+      if (receivedAny || err instanceof DMError || err instanceof AnonSessionError) throw err;
+      if (!isTransientNetworkError(err)) throw err;
       if (attempt === MAX_ATTEMPTS) break;
       const delay = 500 * attempt; // 500ms, 1000ms
       console.warn(`[StreamChat] Network drop (attempt ${attempt}/${MAX_ATTEMPTS}), retrying in ${delay}ms...`, err);
       await new Promise(r => setTimeout(r, delay));
     }
   }
+
+  const detail = lastErr instanceof Error ? lastErr.message : 'erro desconhecido';
+  // Um fetch que falha com o navegador online não é "internet instável": é o
+  // backend fora do ar, DNS morto (projeto Supabase pausado) ou CORS. Culpar a
+  // internet do jogador nesse caso esconde a causa real por horas.
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+    throw new Error(`Você está sem internet. Reconecte e tente novamente. (${detail})`);
+  }
   throw new Error(
-    `Conexão instável. Verifique sua internet e tente novamente. (${lastErr instanceof Error ? lastErr.message : 'erro desconhecido'})`
+    `Não consegui falar com o servidor do jogo — ele pode estar fora do ar. ` +
+    `Sua conexão parece ok. (${detail})`
   );
 }
 
@@ -331,6 +380,14 @@ export async function streamChat({
     ollama: streamOllama,
     custom: streamCustom,
   };
+
+  // Falha cedo e com instrução, em vez de deixar o provedor devolver um 401 cru.
+  if (requiresApiKey(aiConfig.provider) && !aiConfig.apiKey) {
+    throw new Error(
+      `O provedor "${aiConfig.provider}" precisa de uma chave de API. ` +
+      `Abra Configurações de IA e informe a sua — ela fica salva só neste navegador.`
+    );
+  }
 
   const handler = handlers[aiConfig.provider] || streamLovable;
   const startTime = Date.now();

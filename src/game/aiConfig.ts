@@ -86,6 +86,30 @@ export function saveAIConfig(config: AIConfig): void {
 }
 
 /**
+ * Combina a configuração global (painel admin) com a do jogador.
+ *
+ * A regra que não se quebra: **a chave nunca vem do servidor**. A config global
+ * é lida de uma tabela de leitura pública e, mesmo que não fosse, o cliente usa
+ * a chave para chamar o provedor direto do navegador — qualquer chave global
+ * apareceria no DevTools de todo jogador. Então o admin escolhe provider/model
+ * e cada jogador traz a própria chave.
+ */
+export function resolveAIConfig(adminConfig: AIConfig | null): AIConfig {
+  const local = loadAIConfig();
+  if (!adminConfig) return local;
+  return {
+    ...adminConfig,
+    apiKey: local.apiKey ?? '',
+    baseUrl: adminConfig.baseUrl || local.baseUrl,
+  };
+}
+
+/** Provedores que não funcionam sem chave — usado para dar erro acionável. */
+export function requiresApiKey(provider: AIProvider): boolean {
+  return PROVIDER_OPTIONS.find(p => p.id === provider)?.needsKey ?? false;
+}
+
+/**
  * Tests connectivity to the configured LLM endpoint.
  * Agnostic: works with any provider — Ollama, OpenAI, Anthropic, custom, etc.
  */
