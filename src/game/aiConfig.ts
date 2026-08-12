@@ -16,13 +16,25 @@ export interface ConnectionTestResult {
 
 export const PROVIDER_OPTIONS: { id: AIProvider; name: string; models: string[]; defaultModel: string; baseUrl: string; needsKey: boolean; description: string }[] = [
   {
+    // id mantido como 'lovable' para não invalidar configs já salvas em
+    // localStorage e no admin_config. O que ele significa hoje é "o proxy do
+    // servidor": a edge function decide o destino pelo nome do modelo e usa a
+    // chave que está nos secrets — nenhuma chave passa pelo navegador.
     id: 'lovable',
-    name: 'Lovable AI (padrão)',
-    models: ['google/gemini-3-flash-preview', 'google/gemini-2.5-flash', 'google/gemini-2.5-pro', 'openai/gpt-5', 'openai/gpt-5-mini'],
-    defaultModel: 'google/gemini-3-flash-preview',
+    name: 'Servidor do jogo (padrão)',
+    models: [
+      'gpt-4o-mini',
+      'gpt-4o',
+      'google/gemini-3-flash-preview',
+      'google/gemini-2.5-flash',
+      'google/gemini-2.5-pro',
+      'openai/gpt-5',
+      'openai/gpt-5-mini',
+    ],
+    defaultModel: 'gpt-4o-mini',
     baseUrl: '',
     needsKey: false,
-    description: 'Sem configuração',
+    description: 'Sem configuração — a chave fica no servidor',
   },
   {
     id: 'openai',
@@ -78,7 +90,7 @@ export function loadAIConfig(): AIConfig {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) return JSON.parse(saved);
   } catch {}
-  return { provider: 'lovable', apiKey: '', model: 'google/gemini-3-flash-preview', baseUrl: '' };
+  return { provider: 'lovable', apiKey: '', model: 'gpt-4o-mini', baseUrl: '' };
 }
 
 export function saveAIConfig(config: AIConfig): void {

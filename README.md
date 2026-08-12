@@ -277,10 +277,18 @@ Acesse `/admin` e na aba **Configuração de IA**, selecione o provedor e modelo
 | Ollama | qualquer modelo local | Não |
 | Custom | qualquer endpoint OpenAI-compatible | Opcional |
 
-> **Provedor padrão (`lovable`)**: roteia pela edge function `corporate-quest-dm`,
-> que precisa do secret `LOVABLE_API_KEY` configurado em **Edge Functions →
-> Secrets**. Sem ele, todo turno do DM falha com `503`. Se você não usa o gateway
-> da Lovable, escolha outro provedor no painel admin ou nas configurações in-game.
+> **Provedor padrão — "Servidor do jogo"**: roteia pela edge function
+> `corporate-quest-dm`, que guarda a chave nos secrets e nunca a expõe ao
+> navegador. É a única forma segura de servir um LLM para visitantes sem
+> cadastro. O destino é escolhido pelo nome do modelo:
+>
+> | Modelo | Destino | Secret necessário |
+> |---|---|---|
+> | `gpt-4o`, `gpt-4o-mini`, `gpt-4.1`, `gpt-4.1-mini` | API da OpenAI | `OPENAI_API_KEY` |
+> | `google/...`, `openai/gpt-5...` | Gateway da Lovable | `LOVABLE_API_KEY` |
+>
+> Configure o secret correspondente em **Edge Functions → Secrets**. Sem ele,
+> todo turno do DM falha com `503` e uma mensagem dizendo qual secret falta.
 
 Para Ollama local, defina a base URL como `http://localhost:11434` e o modelo desejado (ex: `llama3`, `gemma4`).
 

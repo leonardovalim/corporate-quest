@@ -9,7 +9,12 @@ const corsHeaders = {
 
 // Allowlist of models the client may request through this proxy.
 // Keep in sync with src/game/aiConfig.ts (provider 'lovable').
-const ALLOWED_MODELS = new Set<string>([
+//
+// Dois destinos possíveis, escolhidos pelo formato do nome do modelo:
+//   "vendor/model" → gateway da Lovable (LOVABLE_API_KEY)
+//   "model"        → API da OpenAI direto (OPENAI_API_KEY)
+// A chave nunca sai do servidor em nenhum dos dois casos.
+const LOVABLE_MODELS = new Set<string>([
   "google/gemini-3-flash-preview",
   "google/gemini-2.5-flash",
   "google/gemini-2.5-pro",
@@ -18,7 +23,16 @@ const ALLOWED_MODELS = new Set<string>([
   "openai/gpt-5-mini",
   "openai/gpt-5-nano",
 ]);
+const OPENAI_MODELS = new Set<string>([
+  "gpt-4o",
+  "gpt-4o-mini",
+  "gpt-4.1",
+  "gpt-4.1-mini",
+]);
 const DEFAULT_MODEL = "google/gemini-3-flash-preview";
+
+const LOVABLE_ENDPOINT = "https://ai.gateway.lovable.dev/v1/chat/completions";
+const OPENAI_ENDPOINT = "https://api.openai.com/v1/chat/completions";
 
 const MAX_MESSAGES = 60;
 const MAX_TOTAL_CHARS = 60_000;
@@ -70,9 +84,13 @@ serve(async (req) => {
 
     const { messages, model } = body as { messages?: unknown; model?: unknown };
 
-    // --- Validate model ---
+    // --- Validate model + escolhe o destino ---
     const requestedModel = typeof model === "string" && model.length > 0 ? model : DEFAULT_MODEL;
-    if (!ALLOWED_MODELS.has(requestedModel)) {
+    const target: "lovable" | "openai" | null =
+      LOVABLE_MODELS.has(requestedModel) ? "lovable"
+      : OPENAI_MODELS.has(requestedModel) ? "openai"
+      : null;
+    if (!target) {
       return jsonError(`Model not allowed: ${requestedModel}`, 400);
     }
 
@@ -107,23 +125,24 @@ serve(async (req) => {
       sanitizedMessages.push({ role, content });
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
+    const secretName = target === "openai" ? "OPENAI_API_KEY" : "LOVABLE_API_KEY";
+    const apiKey = Deno.env.get(secretName);
+    if (!apiKey) {
       // Secret ausente derruba 100% dos turnos do DM. Responder explícito para
       // não parecer erro de rede ou de crédito no cliente.
-      console.error("LOVABLE_API_KEY secret is missing on this project");
+      console.error(`${secretName} secret is missing on this project`);
       return jsonError(
-        "LOVABLE_API_KEY não está configurada nesta instância (Edge Functions → Secrets).",
+        `${secretName} não está configurada nesta instância (Edge Functions → Secrets).`,
         503
       );
     }
 
     const response = await fetch(
-      "https://ai.gateway.lovable.dev/v1/chat/completions",
+      target === "openai" ? OPENAI_ENDPOINT : LOVABLE_ENDPOINT,
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          Authorization: `Bearer ${apiKey}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -135,21 +154,31 @@ serve(async (req) => {
     );
 
     if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Tente novamente em breve." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
+      const body = await response.text().catch(() => "");
+      console.error(`${target} upstream error:`, response.status, body);
+
       if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Créditos esgotados. Adicione créditos no workspace." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        return jsonError("Créditos de IA esgotados. Adicione créditos no provedor.", 402);
+      }
+      if (response.status === 429) {
+        // A OpenAI usa 429 tanto para rate limit quanto para cota estourada —
+        // são ações diferentes de quem opera, então vale distinguir.
+        const quotaExhausted = /insufficient_quota|exceeded your current quota/i.test(body);
+        return jsonError(
+          quotaExhausted
+            ? "Cota do provedor esgotada. Verifique o faturamento da sua conta."
+            : "Rate limit atingido. Tente novamente em breve.",
+          quotaExhausted ? 402 : 429
         );
       }
-      const t = await response.text();
-      console.error("AI gateway error:", response.status, t);
-      return jsonError("AI gateway error", 500);
+      if (response.status === 401 || response.status === 403) {
+        return jsonError(
+          `Chave de API rejeitada pelo provedor (${secretName}). Verifique o secret.`,
+          503
+        );
+      }
+      // Não repassar o corpo cru: pode conter detalhes da conta do operador.
+      return jsonError(`Provedor de IA respondeu ${response.status}.`, 502);
     }
 
     return new Response(response.body, {
