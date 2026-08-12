@@ -31,6 +31,10 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Removida `verify_admin_password`, função legada exposta a `anon`
 
 ### Added
+- Edge function fala direto com a OpenAI via secret `OPENAI_API_KEY`, escolhendo
+  o destino pelo nome do modelo (`gpt-4o-mini` → OpenAI, `google/...` → gateway
+  da Lovable). Permite servir o jogo a visitantes sem cadastro sem expor chave
+  ao navegador e sem depender do workspace da Lovable
 - Sessão anônima do Supabase (`src/lib/session.ts`): o visitante sem cadastro
   ganha um JWT real, o que satisfaz o auth check da edge function do DM sem
   adicionar fricção de login
